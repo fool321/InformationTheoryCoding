@@ -13,8 +13,6 @@ def huffman_initial_count(message_count, digits):
     Return the number of messages that must be grouped in the first layer for
     Huffman Code generation.
 
-    See the section "Generalization" in ./notes.md for details.
-
     :message_count: Positive integral message count.
     :digits: Integer >= 2 representing how many digits are to be used in codes.
     :returns: The number of messages that _must_ be grouped in the first level
@@ -53,15 +51,20 @@ def combine_and_replace(nodes, n):
     group = nodes[:n]
     combined = TreeNode(sum(node.key for node in group), None, group)
     nodes = nodes[n:]
+
+    # insert the combined node into the proper place in the list and Keep ascending
+    # using Bisection algorithms
+
     bisect.insort(nodes, combined)
 
     return nodes
 
-###
+
 def huffman_nary_tree(probabilities, digits):
     """Return a Huffman tree using the given number of digits.
 
-    This `digits`-ary tree is always possible to create.
+    This `digits`-ary tree is always possible to create,
+    and the `digits`-ary Huffman coding is always optimal.
 
     :probabilities: List of tuples (symbol, probability) where probability is
                     any floating point and symbol is any object.
@@ -78,15 +81,12 @@ def huffman_nary_tree(probabilities, digits):
 
     if len(probabilities) == 1:
         symbol, freq = probabilities[0]
-        if freq != 1:
-            print("The probabilities sum to {} (!= 1)...".format(freq))
-        if math.isclose(probabilities[0].key, 1.0):
-            print("(but they are close)")
 
         return TreeNode(freq, symbol)
 
     # TreeNode does rich comparison on key value (probability), so we can
     # pass this right to sorted().
+    # sorted(): Return a new list containing all items from the iterable in ascending order.
     probabilities = [TreeNode(freq, symbol) for (symbol, freq) in probabilities]
     probabilities = sorted(probabilities)
 
@@ -94,16 +94,9 @@ def huffman_nary_tree(probabilities, digits):
     initial_count = huffman_initial_count(len(probabilities), digits)
     probabilities = combine_and_replace(probabilities, initial_count)
 
-    # If everything is coded correctly, this loop is guaranteed to terminate
-    # due to the initial number of messages merged.
     while len(probabilities) != 1:
         # Have to grab `digits` nodes from now on to meet an optimum code requirement.
         probabilities = combine_and_replace(probabilities, digits)
-
-    if probabilities[0].key != 1:
-        print("The probabilities sum to {} (!= 1)...".format(probabilities[0].key))
-        if math.isclose(probabilities[0].key, 1.0):
-            print("(but they are close)")
 
     return probabilities.pop()
 
@@ -120,7 +113,7 @@ def indicies_to_code(path, digits):
     combination = ""
     for index in path:
         if index < 0:
-            raise ValueError("cannot accept negative path indices (what went wrong?)")
+            raise ValueError("cannot accept negative path indices (something wrong?)")
         if index >= digits:
             raise ValueError("cannot have an index greater than the number of digits!")
 
@@ -130,30 +123,29 @@ def indicies_to_code(path, digits):
 
 ####
 def huffman_nary_dict(probabilities, digits):
-    """Return a dictionary that decodes messages from the nary Huffman tree.
+    """Return a dictionary that decodes messages from the n-ary Huffman tree.
 
     This gives a method of _decoding_, but not _encoding_. For that, an inverse
     dictionary will need to be created. See inverse_dict().
 
     :probabilities: List of tuples (symbol, probability) where probability is
                     any floating point and symbol is any object.
-    :digits: Integral number of digits to use in the Huffman encoding. Must be
-             at least two.
+    :digits: Integral number of digits to use in the Huffman encoding.
+
     :returns:  A dictionary of {code: message} keys, where "code" is a string
                of digits representing the Huffman encoding for the given
                message.
 
     """
     def visit(node, path, decoding_dict):
-        # The goal here is to visit each node, passing the path taken to get there
-        # as well. When we reach a leaf, then we know that we're at a message, so
-        # we can turn the path into digits (in an arbitrary but consistent way) and
-        # add it to the dict.
-        # Here, the "path" is the list of indices for children that we have to
-        # access to get to the needed node. In binary, paths would be lists of
-        # 0s and 1s.
-        # We modify the passed in dictionary, so no returning is needed.
-        # See: https://stackoverflow.com/questions/986006.
+        '''
+        visit each node and passing the path taken to get there as well.
+        "path" is the list of indices for children that we have to
+        access to get to the needed node.
+
+        See: https://stackoverflow.com/questions/986006.
+        '''
+
         if len(node.children) == 0:
             code = indicies_to_code(path, digits)
             decoding_dict[code] = node.data
@@ -173,7 +165,7 @@ def inverse_dict(original):
     """Return a dictionary that is the inverse of the original.
 
     Given the pair original[key] = value, the returned dictionary will give
-    ret[value] = key. It is important to keep two separate dictionaries in case
+    return[value] = key. It is important to keep two separate dictionaries in case
     there is key/value collision. Trying to insert a value that matches a key
     as a key will overwrite the old key.
 
@@ -254,22 +246,25 @@ class HuffmanCode(object):
 
         decode = ""
         while string:
-            # Huffman codes are prefix free, so read until we find a code.
+            # Huffman codes are prefix, so read until we find a code.
             for index in range(len(string)+1):
                 if string[:index] in self.huffman:
                     break
+
             code = string[:index]
             decode += self.huffman[code]
             string = string[index:]
 
         return decode
 
-if __name__ == "__main__":
+def demo():
     from Huffman.freq import str_freq
     with open("test.txt") as f:
         in_str = f.read()
 
     freqs = str_freq(in_str)
+
+    # items(): a set-like object providing a view on D's items
     probabilities = list(freqs.items())
 
     root = huffman_nary_tree(probabilities, 2)
@@ -281,6 +276,9 @@ if __name__ == "__main__":
     print()
     print(huffman.encode(in_str))
     print()
-    print(ascii_encode(in_str))
-    print()
-    print(alt_huffman.decode(alt_huffman.encode(in_str)))
+    print(alt_huffman.decode(alt_huffman.encode(in_str)) == huffman.decode((huffman.encode(in_str))))
+
+    pass
+
+if __name__ == "__main__":
+    demo()
