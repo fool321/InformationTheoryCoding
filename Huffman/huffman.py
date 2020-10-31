@@ -280,5 +280,46 @@ def demo():
 
     pass
 
+def out_dic(dict):
+    """output the dictionary into 'dicfile' for decode,
+    which contains the freq info
+
+    :param dict: the dict to be write
+    :return: null
+    """
+    with open('dicfile', 'w') as f:
+        print(dict, file=f)
+
+    pass
+
+
+def read_dic(filename='dicfile'):
+    """
+    reload the dictionary file to rebuild the Huffman tree for decoding
+
+    :return: dictionary contains the freq info
+    """
+    with open(filename, 'r') as f:
+        content = f.read()
+    dic = eval(content)
+    return dic
+    pass
+
+
+def out(str, filename):
+    """output str into the file """
+
+    with open(filename,'wb') as f:
+        f.write(str.encode('ascii'))
+    pass
+
+def inpu(filename):
+    """input the file """
+    with open(filename,"r") as f:
+        str = f.read()
+
+    return str
+    pass
+
 if __name__ == "__main__":
     demo()
