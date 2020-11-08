@@ -38,11 +38,6 @@ def combine_and_replace(nodes, n):
 
     Note: The sum of keys made here is the smallest such combination.
 
-    In the contradictory style of Huffman, if any set of nodes were chosen
-    except for the first n, then changing a node not in the first n to one that
-    is from the first n would reduce the sum of their keys. Thus the smallest
-    sum is made from the first n nodes.
-
     :nodes: A list of TreeNodes.
     :n: Integer < len(nodes).
     :returns: Low-to-high list that combines the last n nodes into one.
