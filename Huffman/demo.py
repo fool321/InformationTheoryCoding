@@ -7,8 +7,6 @@
 from Huffman import huffman
 from Huffman import freq
 import base64
-import struct
-import textwrap
 
 
 def enc(filename):
@@ -40,9 +38,9 @@ def enc(filename):
 
 def dec(filename):
     """
+    decode the string file using given dictionary file
 
     :param filename: dictionary file
-    :return:
     """
 
     freq_dict = huffman.read_dic(filename)
@@ -67,20 +65,23 @@ def dec(filename):
         f.write(out5)
         f.close()
     # print(out2==out3) : true
-    # print(out3==out5)
 
     pass
 
 
-def demo(type=0, filename=None,base_list = [2,3,5]):
+def demo(type=0, filename=None, base_list=[2, 3, 5]):
     """
     :param type:
         0 : encode only ;
         1 : encode & decode
+    :param base_list:
+        build Huffman tree with base_list
     """
     with open(filename, 'rb') as f:
+        # read file as binary
         st = f.read()
-        res = "".join(chr(x) for x in st)  # str
+
+        res = "".join(chr(x) for x in st)  # type(res) : str
         in_str = res
 
         # str = base64.b64encode(st)
@@ -103,6 +104,7 @@ def demo(type=0, filename=None,base_list = [2,3,5]):
     huffman.out(n5_ray_encoding, '5-ary-string')
     huffman.out(binary_encoding, '2-ary-string')
 
+    # decode and output
     if type == 1:
         out = n3_ray_huffman.decode(n3_ray_encoding)
         out_byte = b''
@@ -148,4 +150,4 @@ def main():
 if __name__ == '__main__':
     main()
     # demo(0,"bigtest.txt")
-    # demo(1,"kkk.zip")
+    # demo(1,"test.zip")

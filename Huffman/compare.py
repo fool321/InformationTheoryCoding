@@ -4,7 +4,8 @@
 # @contact: weiyiwu00@gmail.com 
 # @File : compare.py
 
-import sys, os
+import os
+import sys
 
 curPath = os.path.abspath(os.path.dirname(__file__))
 rootPath = os.path.split(curPath)[0]
@@ -13,41 +14,41 @@ sys.path.append(rootPath)
 from Huffman import huffman
 from Huffman import freq
 from Huffman import demo
-from bitarray import bitarray
 
 
-def compare(baselist=[2, 3, 5],type = 0):
+def compare(baselist=[2, 3, 5], type=0):
     with open('2-ary-string') as f:
         in_str = f.read()
-        generate(in_str, baselist[0],type)
+        generate(in_str, baselist[0], type)
         f.close()
 
     with open('3-ary-string') as f:
         in_str = f.read()
-        generate(in_str, baselist[1],type)
+        generate(in_str, baselist[1], type)
         f.close()
 
     with open('5-ary-string') as f:
         in_str = f.read()
-        generate(in_str, baselist[2],type)
+        generate(in_str, baselist[2], type)
         f.close()
     pass
 
 
-def generate(in_str, n_ary,type = 0):
+def generate(in_str, n_ary, type=0):
     """
     in 5-ary-string file, we have a string of {01234}, but actually,
     computer use binary data, so we generate binary code from x-ray
     string (using Huffman encode with digit of 2)
 
+    :type
+        0 : compare base 2\3\5
+        1 : compare base n_ary\n_ary+1\n_ary+2\
     :return: string of {01}
     """
 
     freq_dict = freq.str_freq(in_str)
 
     freqs = list(freq_dict.items())
-
-    # base 2, to simulate binary code
 
     n2_ray_huffman = huffman.HuffmanCode(freqs, 2)
 
@@ -60,7 +61,8 @@ def generate(in_str, n_ary,type = 0):
     elif n_ary == 5:
         filename = "final-5-ray"
 
-    # for the use of function compare_Compression_rati, we should change the filename a little...
+    # for the use of function compare_Compression_rati,
+    # we should change the filename a little...
     if type == 1:
         if n_ary % 3 == 2:
             filename = "final-2-ray"
@@ -75,7 +77,7 @@ def generate(in_str, n_ary,type = 0):
 
 def compare_Compression_ratio(filename="test.txt", baselist=[2, 3, 5]):
     demo.demo(0, filename, baselist)
-    compare(baselist,1)
+    compare(baselist, 1)
     filesize = os.path.getsize(filename)
     filesize2 = os.path.getsize("final-2-ray")
     filesize3 = os.path.getsize("final-3-ray")

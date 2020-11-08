@@ -8,6 +8,7 @@ from Huffman.tree import TreeNode
 import bisect
 import math
 
+
 def huffman_initial_count(message_count, digits):
     """
     Return the number of messages that must be grouped in the first layer for
@@ -29,6 +30,7 @@ def huffman_initial_count(message_count, digits):
         return 1
 
     return 2 + (message_count - 2) % (digits - 1)
+
 
 def combine_and_replace(nodes, n):
     """
@@ -57,9 +59,6 @@ def combine_and_replace(nodes, n):
 
 def huffman_nary_tree(probabilities, digits):
     """Return a Huffman tree using the given number of digits.
-
-    This `digits`-ary tree is always possible to create,
-    and the `digits`-ary Huffman coding is always optimal.
 
     :probabilities: List of tuples (symbol, probability) where probability is
                     any floating point and symbol is any object.
@@ -95,16 +94,9 @@ def huffman_nary_tree(probabilities, digits):
 
     return probabilities.pop()
 
-def indicies_to_code(path, digits):
-    """Convert the path into a string.
 
-     We join the indices directly, from most to least significant, keeping
-     leading zeroes.
-     Examples:
-       [1, 2, 3] -> "123"
-       [7, 2, 10] -> "72a"
-       [0, 2, 1] ->  "021"
-    """
+def indicies_to_code(path, digits):
+    """Convert the path into a string."""
     combination = ""
     for index in path:
         if index < 0:
@@ -116,12 +108,10 @@ def indicies_to_code(path, digits):
 
     return combination
 
+
 ####
 def huffman_nary_dict(probabilities, digits):
     """Return a dictionary that decodes messages from the n-ary Huffman tree.
-
-    This gives a method of _decoding_, but not _encoding_. For that, an inverse
-    dictionary will need to be created. See inverse_dict().
 
     :probabilities: List of tuples (symbol, probability) where probability is
                     any floating point and symbol is any object.
@@ -132,6 +122,7 @@ def huffman_nary_dict(probabilities, digits):
                message.
 
     """
+
     def visit(node, path, decoding_dict):
         '''
         visit each node and passing the path taken to get there as well.
@@ -156,6 +147,7 @@ def huffman_nary_dict(probabilities, digits):
 
     return decoding_dict
 
+
 def inverse_dict(original):
     """Return a dictionary that is the inverse of the original.
 
@@ -179,7 +171,8 @@ def inverse_dict(original):
 
     return ret
 
-def baseN(num,b,numerals="0123456789abcdefghijklmnopqrstuvwxyz"):
+
+def baseN(num, b, numerals="0123456789abcdefghijklmnopqrstuvwxyz"):
     '''
     convert an integer to a string in any base
 
@@ -191,6 +184,7 @@ def baseN(num,b,numerals="0123456789abcdefghijklmnopqrstuvwxyz"):
     '''
     return ((num == 0) and numerals[0]) or (baseN(num // b, b, numerals).lstrip(numerals[0]) + numerals[num % b])
 
+
 def ascii_encode(string):
     """Return the 8-bit ascii representation of `string` as a string.
 
@@ -198,14 +192,16 @@ def ascii_encode(string):
     :returns: String.
 
     """
+
     def pad(num):
         binary = baseN(num, 2)
         padding = 8 - len(binary)
-        return "0"*padding + binary
+        return "0" * padding + binary
+
     return "".join(pad(ord(c)) for c in string)
 
-class HuffmanCode(object):
 
+class HuffmanCode(object):
     """Encode and decode messages with a constructed Huffman code."""
 
     def __init__(self, probabilities, digits):
@@ -221,9 +217,6 @@ class HuffmanCode(object):
 
     def encode(self, messages):
         """Encode each item in `messages` with the stored Huffman code.
-
-        Raises a KeyError if there is a message in `messages` that is not in
-        the inverse Huffman dictionary.
 
         :messages: List of messages to be encoded.
         :returns: String of digits that represents Huffman encoding.
@@ -241,8 +234,8 @@ class HuffmanCode(object):
 
         decode = ""
         while string:
-            # Huffman codes are prefix, so read until we find a code.
-            for index in range(len(string)+1):
+            # Huffman codes are prefix, so just read until find a code.
+            for index in range(len(string) + 1):
                 if string[:index] in self.huffman:
                     break
 
@@ -252,14 +245,13 @@ class HuffmanCode(object):
 
         return decode
 
+
 def demo():
     from Huffman.freq import str_freq
     with open("test.txt") as f:
         in_str = f.read()
 
     freqs = str_freq(in_str)
-
-    # items(): a set-like object providing a view on D's items
     probabilities = list(freqs.items())
 
     root = huffman_nary_tree(probabilities, 2)
@@ -268,12 +260,11 @@ def demo():
     alt_huffman = HuffmanCode(probabilities, 16)
 
     print(alt_huffman.encode(in_str))
-    print()
     print(huffman.encode(in_str))
-    print()
     print(alt_huffman.decode(alt_huffman.encode(in_str)) == huffman.decode((huffman.encode(in_str))))
 
     pass
+
 
 def out_dic(dict):
     """output the dictionary into 'dicfile' for decode,
@@ -304,17 +295,19 @@ def read_dic(filename='dicfile'):
 def out(str, filename):
     """output str into the file """
 
-    with open(filename,'wb') as f:
+    with open(filename, 'wb') as f:
         f.write(str.encode('ascii'))
     pass
 
+
 def inpu(filename):
     """input the file """
-    with open(filename,"r") as f:
+    with open(filename, "r") as f:
         str = f.read()
 
     return str
     pass
+
 
 if __name__ == "__main__":
     demo()
